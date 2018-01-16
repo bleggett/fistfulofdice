@@ -1,15 +1,21 @@
 package die
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
+	"sync"
 )
 
 // Roll a die
-func Roll(faces int) int {
+func Roll(faces int, c chan int, wg *sync.WaitGroup) {
+	result := getRandInt(faces) + 1
+	time.Sleep(time.Second)
+	defer wg.Done()
+	c <- result
+}
+
+//Make this a mockable private member.
+var getRandInt = func(limit int) int {
 	rand.Seed(time.Now().UnixNano())
-	result := rand.Intn(faces) + 1
-	fmt.Printf("..a die! Result %d\n", result)
-	return result
+	return rand.Intn(limit)
 }
