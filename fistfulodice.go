@@ -5,6 +5,7 @@ import (
 	"github.com/bleggett/fistfulofdice/pkg/die"
 	"os"
 	"strconv"
+	"sync"
 )
 
 func main() {
@@ -15,9 +16,19 @@ func main() {
 			fmt.Printf("Error parsing CLI: %s", err)
 		}
 		c := make(chan int, count)
+		var wg sync.WaitGroup
+		wg.Add(count)
+		fmt.Printf("Chucking a fist of %d di(c)e!\n", count)
 		for i := 0; i < count; i++ {
-			die.Roll(6, c)
-			fmt.Printf("Result: %d\n", <- c)
+			go die.Roll(6, c, &wg)
+		}
+		//If we used `range` here, we'd have to close the channel in Roll,
+		//but Roll doesn't know how many times it is called, so can't close there.
+		wg.Wait()
+		fmt.Print("\n")
+		fmt.Print("Result: ")
+		for j := 0; j < count; j++ {
+			fmt.Printf("%d ", <- c)
 		}
 	} else {
 		fmt.Print("You must specify a number of dice to roll...\n")
