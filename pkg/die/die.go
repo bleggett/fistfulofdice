@@ -2,16 +2,16 @@ package die
 
 import (
 	"math/rand"
-	"time"
 	"sync"
+	"time"
 )
 
 // Roll a die
 func Roll(faces int, c chan int, wg *sync.WaitGroup) {
 	result := getRandInt(faces) + 1
 	time.Sleep(time.Second)
-	defer wg.Done()
 	c <- result
+	defer wg.Done()
 }
 
 //Make this a mockable private member.

@@ -1,27 +1,26 @@
 package die
 
 import (
-	"testing"
 	"sync"
+	"testing"
 )
 
 func TestReturnsInt(t *testing.T) {
 	var testWg sync.WaitGroup
+	var testChan = make(chan int)
 	var tests = []struct {
-		faces int
-		testChan chan int
-		testWg sync.WaitGroup
+		faces    int
 		fakeRand int
 	}{
-		{6, make(chan int, 1), testWg, 4},
-		{6, make(chan int, 1), testWg, 0},
-		{6, make(chan int, 1), testWg, 5},
-		{8, make(chan int, 1), testWg, 4},
-		{8, make(chan int, 1), testWg, 7},
-		{8, make(chan int, 1), testWg, 6},
+		{6, 4},
+		{6, 0},
+		{6, 5},
+		{8, 4},
+		{8, 7},
+		{8, 6},
 	}
 	for _, c := range tests {
-		c.testWg.Add(1)
+		testWg.Add(1)
 		var limitArg int
 
 		getRandInt = func(limit int) int {
@@ -29,9 +28,8 @@ func TestReturnsInt(t *testing.T) {
 			return c.fakeRand
 		}
 
-		go Roll(c.faces, c.testChan, &c.testWg)
-		c.testWg.Wait()
-		res := <- c.testChan
+		go Roll(c.faces, testChan, &testWg)
+		res := <-testChan
 
 		if res != (c.fakeRand + 1) {
 			t.Errorf("Roll() did not return an integer! %d", res)
