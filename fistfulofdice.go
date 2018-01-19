@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/bleggett/fistfulofdice/pkg/die"
+	"github.com/bleggett/fistfulofdice/internal/pkg/die"
 	"github.com/briandowns/spinner"
 	"os"
 	"strconv"
